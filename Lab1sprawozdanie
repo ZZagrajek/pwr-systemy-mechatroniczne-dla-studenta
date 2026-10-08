@@ -1,0 +1,107 @@
+1. 
+Dlaczego zapis do BSRR jest bezpieczniejszy niż do ODR, gdy ten sam port obsługuje też przerwanie?
+Zapis do BSRR wykonuje się w jednym cyklu/instrukcji zapisu. Nie wymaga uprzedniego odczytu stanu pozostałych pinów, dzięki czemu równoległa modyfikacja innych pinów tego samego portu jest możliwa.
+
+2.
+pierwotnie : Wcisniecia (z debounce): 10   zbocza w przerwaniu: od 30 do 508
+po zmianie "bounce": "0" - stała czasowa jest bardziej stała, nie ma opoznienia
+po zmianie CZAS_DEBOUNCE_MS na 1 ms bez zmian
+po zmiane CZAS_DEBOUNCE_MS na 200 ms przycisk wymaga dłuższeg przytrzynamia, jedno przycisnięcie to wartosc zboczy jak dla 10 przycisniec
+
+3. 
+Policz: timer TIM14 taktowany 48 MHz ma przepełniać się 1600 razy/s. Jakie PSC i ARR ustawi biblioteka?
+f timera = 48 MHz
+f wypełnienia = 1600 Hz
+czyli 48x10^6/1600=30000 - najmniejszy możliwy dzielnik
+ARR+1=30000 wiec
+PSC = 0 ARR = 29999
+
+Stary:
+const uint32_t krokowNaS = 50 + kod * (800 - 50) / 4095;
+timer->setOverflow(2 * krokowNaS, HERTZ_FORMAT);
+kierunekWGore = digitalRead(PIN_KIERUNEK) == HIGH;
+digitalWrite(PIN_DIR, kierunekWGore ? HIGH : LOW);
+
+Nowy:
+const int32_t predkosc = (kod - 2048) * 400 / 2048;
+kierunekWGore = predkosc >= 0;
+
+4. Winda
+
+TODO1
+  if (odczyt != surowy) {
+    surowy = odczyt;
+    zmianaMs = teraz;
+  }
+
+  if ((teraz - zmianaMs >= CZAS_DEBOUNCE_MS) && stabilny != surowy) {
+    stabilny = surowy;
+    if (stabilny) {
+      return true;
+    }
+  }
+Teraz da się wzywać winde.
+Winda gotowa. Kabina na pietrze 0.
+Wezwanie na pietro 0
+[6636 ms] POSTOJ -> DRZWI_OTWARTE  (pietro 0)
+Wezwanie na pietro 1
+Wezwanie na pietro 2
+Wezwanie na pietro 2
+Wezwanie na pietro 0
+Wezwanie na pietro 0
+Wezwanie na pietro 0
+Wezwanie na pietro 1
+
+TODO2
+if (stepWysoki) {
+  digitalWrite(PIN_STEP, LOW);
+  stepWysoki = false;
+  return;
+}
+
+if (!silnikWlaczony || pozycja == pozycjaCel) {
+  return;
+}
+
+if (pozycjaCel > pozycja) {
+  digitalWrite(PIN_DIR, HIGH);
+  pozycja++;
+} else {
+  digitalWrite(PIN_DIR, LOW);
+  pozycja--;
+}
+
+digitalWrite(PIN_STEP, HIGH);
+stepWysoki = true;
+
+Wynik : 
+Winda gotowa. Kabina na pietrze 0.
+Wezwanie na pietro 2
+[1554 ms] POSTOJ -> JAZDA  (pietro 0)
+
+TODO3a
+if (odczytajPozycje() == (int32_t)pietroCel * KROKI_NA_PIETRO) {
+  wezwanie[pietroCel] = false;
+  otworzDrzwi();
+}
+
+wynik:
+Winda gotowa. Kabina na pietrze 0.
+Wezwanie na pietro 2
+[3538 ms] POSTOJ -> JAZDA  (pietro 0)
+[5537 ms] JAZDA -> DRZWI_OTWARTE  (pietro 2)
+
+TODO3b
+if (teraz - wejscieDoStanuMs >= CZAS_DRZWI_MS) {
+  ustawDrzwi(false);
+  zmienStan(POSTOJ);
+}
+
+wynik:
+Winda gotowa. Kabina na pietrze 0.
+Wezwanie na pietro 2
+[9139 ms] POSTOJ -> JAZDA  (pietro 1)
+[11137 ms] JAZDA -> DRZWI_OTWARTE  (pietro 2)
+[14138 ms] DRZWI_OTWARTE -> POSTOJ  (pietro 2)
+
+TODO4
