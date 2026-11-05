@@ -1,0 +1,188 @@
+ros2 node list                                   # jakie węzły działają?
+
+/turtlesim
+
+
+ros2 node info /turtlesim                        # jakie tematy, usługi, parametry ma węzeł?
+
+/turtlesim
+  Subscribers:
+    /parameter_events: rcl_interfaces/msg/ParameterEvent
+    /turtle1/cmd_vel: geometry_msgs/msg/Twist
+  Publishers:
+    /parameter_events: rcl_interfaces/msg/ParameterEvent
+    /rosout: rcl_interfaces/msg/Log
+    /turtle1/color_sensor: turtlesim/msg/Color
+    /turtle1/pose: turtlesim/msg/Pose
+  Service Servers:
+    /clear: std_srvs/srv/Empty
+    /kill: turtlesim/srv/Kill
+    /reset: std_srvs/srv/Empty
+    /spawn: turtlesim/srv/Spawn
+    /turtle1/set_pen: turtlesim/srv/SetPen
+    /turtle1/teleport_absolute: turtlesim/srv/TeleportAbsolute
+    /turtle1/teleport_relative: turtlesim/srv/TeleportRelative
+    /turtlesim/describe_parameters: rcl_interfaces/srv/DescribeParameters
+    /turtlesim/get_parameter_types: rcl_interfaces/srv/GetParameterTypes
+    /turtlesim/get_parameters: rcl_interfaces/srv/GetParameters
+    /turtlesim/get_type_description: type_description_interfaces/srv/GetTypeDescription
+    /turtlesim/list_parameters: rcl_interfaces/srv/ListParameters
+    /turtlesim/set_parameters: rcl_interfaces/srv/SetParameters
+    /turtlesim/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically
+  Service Clients:
+
+  Action Servers:
+    /turtle1/rotate_absolute: turtlesim/action/RotateAbsolute
+  Action Clients:
+
+
+
+ros2 topic list -t                               # tematy z typami wiadomości
+
+/parameter_events [rcl_interfaces/msg/ParameterEvent]
+/rosout [rcl_interfaces/msg/Log]
+/turtle1/cmd_vel [geometry_msgs/msg/Twist]
+/turtle1/color_sensor [turtlesim/msg/Color]
+/turtle1/pose [turtlesim/msg/Pose]
+
+
+
+ros2 interface show turtlesim/msg/Pose           # z jakich pól składa się wiadomość?
+
+float32 x
+float32 y
+float32 theta
+
+float32 linear_velocity
+float32 angular_velocity
+
+
+
+ros2 topic echo /turtle1/pose                    # położenie żółwia (Ctrl+C kończy)
+
+x: 5.544444561004639
+y: 5.544444561004639
+theta: 0.0
+linear_velocity: 0.0
+angular_velocity: 0.0
+---
+x: 5.544444561004639
+y: 5.544444561004639
+theta: 0.0
+linear_velocity: 0.0
+angular_velocity: 0.0
+
+
+
+ros2 topic hz /turtle1/pose                      # z jaką częstotliwością?
+
+average rate: 62.547
+        min: 0.015s max: 0.017s std dev: 0.00053s window: 64
+average rate: 62.504
+        min: 0.015s max: 0.017s std dev: 0.00054s window: 127
+average rate: 62.512
+        min: 0.015s max: 0.017s std dev: 0.00051s window: 190
+average rate: 62.513
+        min: 0.015s max: 0.017s std dev: 0.00050s window: 253
+
+
+
+ros2 topic pub --rate 1 /turtle1/cmd_vel geometry_msgs/msg/Twist \
+  "{linear: {x: 2.0}, angular: {z: 1.8}}"        # jazda po okręgu
+
+publisher: beginning loop
+publishing #1: geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=2.0, y=0.0, z=0.0), angular=geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=1.8))
+
+publishing #2: geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=2.0, y=0.0, z=0.0), angular=geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=1.8))
+
+publishing #3: geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=2.0, y=0.0, z=0.0), angular=geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=1.8))
+
+publishing #4: geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=2.0, y=0.0, z=0.0), angular=geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=1.8))
+
+publishing #5: geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=2.0, y=0.0, z=0.0), angular=geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=1.8))
+
+
+
+ros2 service list
+
+/clear
+/kill
+/reset
+/spawn
+/turtle1/set_pen
+/turtle1/teleport_absolute
+/turtle1/teleport_relative
+/turtlesim/describe_parameters
+/turtlesim/get_parameter_types
+/turtlesim/get_parameters
+/turtlesim/get_type_description
+/turtlesim/list_parameters
+/turtlesim/set_parameters
+/turtlesim/set_parameters_atomically
+
+
+
+ros2 service call /spawn turtlesim/srv/Spawn "{x: 2.0, y: 2.0, theta: 0.0, name: 'zolw2'}"
+
+waiting for service to become available...
+requester: making request: turtlesim.srv.Spawn_Request(x=2.0, y=2.0, theta=0.0, name='zolw2')
+
+response:
+turtlesim.srv.Spawn_Response(name='zolw2')
+
+
+
+ros2 service call /turtle1/teleport_absolute turtlesim/srv/TeleportAbsolute "{x: 5.5, y: 5.5, theta: 0.0}"
+- pojawił się drugi żółw 
+
+
+
+ros2 param list /turtlesim
+
+ background_b
+  background_g
+  background_r
+  holonomic
+  qos_overrides./parameter_events.publisher.depth
+  qos_overrides./parameter_events.publisher.durability
+  qos_overrides./parameter_events.publisher.history
+  qos_overrides./parameter_events.publisher.reliability
+  start_type_description_service
+  use_sim_time
+
+
+
+
+ros2 param set /turtlesim background_r 150
+
+Set parameter successful - inny kolor
+
+
+
+
+ros2 service call /clear std_srvs/srv/Empty
+
+waiting for service to become available...
+requester: making request: std_srvs.srv.Empty_Request()
+
+response:
+std_srvs.srv.Empty_Response()
+
+
+
+ros2 bag record -o jazda /turtle1/cmd_vel /turtle1/pose   # nagraj 20 s jazdy z klawiatury, Ctrl+C
+
+ros2 bag info jazda
+
+Files:             jazda1_0.mcap
+Bag size:          955.0 KiB
+Storage id:        mcap
+ROS Distro:        jazzy
+Duration:          216.096201207s
+Start:             Nov  5 2026 17:16:15.697327249 (1793898975.697327249)
+End:               Nov  5 2026 17:19:51.793528456 (1793899191.793528456)
+Messages:          13615
+Topic information: Topic: /turtle1/cmd_vel | Type: geometry_msgs/msg/Twist | Count: 108 | Serialization Format: cdr
+                   Topic: /turtle1/pose | Type: turtlesim/msg/Pose | Count: 13507 | Serialization Format: cdr
+Service:           0
+Service information:
