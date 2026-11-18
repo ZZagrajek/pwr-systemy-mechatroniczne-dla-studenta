@@ -6,6 +6,7 @@ Usługa:      /regulator/wlacz  (std_srvs/srv/SetBool): włącza i wyłącza reg
 Parametry:   zadana [m], Kp, Ki, v_max [m/s]  (zmiana w locie: ros2 param set)
 """
 import rclpy
+from rclpy.qos import qos_profile_sensor_data
 from geometry_msgs.msg import Twist
 from rclpy.node import Node
 from std_msgs.msg import Float32
@@ -23,7 +24,7 @@ class Regulator(Node):
         self.wlaczony = True
         self.calka = 0.0
         self.ostatni_czas = None
-        self.create_subscription(Float32, 'odleglosc', self.na_pomiar, 10)
+        self.create_subscription(Float32, 'odleglosc', self.na_pomiar,    qos_profile_sensor_data)
         self.pub = self.create_publisher(Twist, 'turtle1/cmd_vel', 10)
         self.create_service(SetBool, '~/wlacz', self.na_wlacz)
         self.get_logger().info('Regulator gotowy')
