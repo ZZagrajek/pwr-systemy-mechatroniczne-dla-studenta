@@ -23,6 +23,7 @@ setup(
         'console_scripts': [
             'czujnik = l3_regulator.czujnik:main',
             'regulator = l3_regulator.regulator:main',
+            'do_punktu = l3_regulator.do_punktu:main',
         ],
     },
 )
