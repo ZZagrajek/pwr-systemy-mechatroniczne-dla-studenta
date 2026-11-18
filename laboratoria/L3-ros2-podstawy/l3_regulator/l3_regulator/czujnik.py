@@ -6,6 +6,7 @@ Parametry:   szum (odchylenie standardowe [m]), czestotliwosc [Hz]
 """
 import random
 
+from rclpy.qos import qos_profile_sensor_data
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32
