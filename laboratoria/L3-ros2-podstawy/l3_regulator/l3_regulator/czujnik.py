@@ -22,7 +22,7 @@ class Czujnik(Node):
         self.declare_parameter('czestotliwosc', 20.0)
         self.x = None
         self.create_subscription(Pose, 'turtle1/pose', self.na_poze, 10)
-        self.pub = self.create_publisher(Float32, 'odleglosc', 10)
+        self.pub = self.create_publisher(Float32, 'odleglosc', qos_profile_sensor_data)
         okres = 1.0 / self.get_parameter('czestotliwosc').value
         self.create_timer(okres, self.pomiar)
         self.get_logger().info('Czujnik odległości uruchomiony')
