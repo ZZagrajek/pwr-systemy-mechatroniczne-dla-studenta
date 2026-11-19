@@ -48,43 +48,22 @@ class DoPunktu(Node):
 
         self.numer_punktu = 0
 
-        self.pub = self.create_publisher(
-            Twist,
-            '/turtle1/cmd_vel',
-            10
-        )
+        self.pub = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
+        self.pub_punkt = self.create_publisher( Int32, '/osiagniety_punkt', 10 )
 
-        self.pub_punkt = self.create_publisher(
-            Int32,
-            '/osiagniety_punkt',
-            10
-        )
-
-        self.create_subscription(
-            Pose,
-            '/turtle1/pose',
-            self.na_poze,
-            10
-        )
-
-        # Timer 20 Hz
+        self.create_subscription( Pose, '/turtle1/pose', self.na_poze,  10)
         self.create_timer(1.0 / 20.0, self.sterowanie)
-
         self.get_logger().info('Węzeł do_punktu uruchomiony')
 
     def na_poze(self, msg: Pose):
-        """Zapamiętanie aktualnego położenia i orientacji żółwia."""
         self.x = msg.x
         self.y = msg.y
         self.theta = msg.theta
 
     def ogranicz(self, wartosc, maksimum):
-        """Ograniczenie wartości do przedziału [-maksimum, maksimum]."""
         return max(-maksimum, min(maksimum, wartosc))
 
     def sterowanie(self):
-
-        # Brak danych o pozycji
         if self.x is None:
             return
 
@@ -99,10 +78,7 @@ class DoPunktu(Node):
 
         # Sprawdzenie poprawności list punktów
         if len(punkty_x) != len(punkty_y) or len(punkty_x) == 0:
-            self.get_logger().error(
-                'Listy punkty_x i punkty_y muszą mieć jednakową, '
-                'niezerową długość'
-            )
+            self.get_logger().error('Listy punkty_x i punkty_y muszą mieć jednakową,' 'niezerową długość')
             self.pub.publish(Twist())
             return
 
@@ -138,39 +114,21 @@ class DoPunktu(Node):
             self.numer_punktu += 1
             return
 
-        # Kąt wymagany do osiągnięcia celu
         kat_celu = math.atan2(dy, dx)
-
-        # Błąd kąta
         blad_kata = kat_celu - self.theta
-
-        # Normalizacja kąta do [-pi, pi)
         blad_kata = (blad_kata + math.pi) % (2.0 * math.pi) - math.pi
-
-        # Regulator P kąta
         predkosc_katowa = K_w * blad_kata
-
-        # Regulator P odległości
         predkosc_liniowa = K_v * odleglosc
 
-        # Zmniejszenie prędkości liniowej przy złym ustawieniu
         predkosc_liniowa *= max(0.0, math.cos(blad_kata))
+        predkosc_liniowa = self.ogranicz(predkosc_liniowa, v_max)
 
-        # Ograniczenie prędkości
-        predkosc_liniowa = self.ogranicz(
-            predkosc_liniowa, v_max
-        )
+        predkosc_katowa = self.ogranicz(predkosc_katowa, w_max )
 
-        predkosc_katowa = self.ogranicz(
-            predkosc_katowa, w_max
-        )
 
-        # Publikacja sterowania
-        cmd = Twist()
-
+        cmd = Twist()  3
         cmd.linear.x = float(predkosc_liniowa)
         cmd.angular.z = float(predkosc_katowa)
-
         self.pub.publish(cmd)
 
 
