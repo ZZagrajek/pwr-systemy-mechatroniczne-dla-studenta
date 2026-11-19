@@ -18,7 +18,10 @@ usługa jest odbiorcą żądania, jeśli dostanie jedno żądanie, wykona jedną
 3. Odtwórz nagranie ros2 bag play jazda po teleport_absolute do punktu startu. Czy żółw powtarza trasę? Dlaczego nie idealnie?
 powtaża trasę ale w sposób nieciągły, zależy od taktowania z jakim funkcja bag pobierała informacje o pozycji żółwia, przedtawia funkcję dyskretną
 
+PYTANIA CZESC DRUGA 
+2. Co widać w cmd_vel przy dużym Kp? - stała prędkość nie jest stałą, duże wzmocnienie przy zmianie wartości np. kierunku
 
+3. Czy człon Ki potrzebny jest w tym układzie? - zwiększa przeregulowanie, regulator dłużej znajduje stan ustalony. W tym przypadku jest zbędny. 
 
 
 
