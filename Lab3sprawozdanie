@@ -1,3 +1,40 @@
+PYTANIA CZESC PIERWSZA 
+1. Jakie pola ma turtlesim/msg/Pose? W jakich jednostkach jest theta?
+
+ros2 interface show turtlesim/msg/Pose           # z jakich pól składa się wiadomość?
+
+float32 x
+float32 y
+float32 theta - radiany
+
+float32 linear_velocity
+float32 angular_velocity
+
+
+2. Czym różni się temat /turtle1/cmd_vel od usługi /spawn (wzorzec komunikacji, kiedy używać)?
+temat wysyła subskrybentom polecenia, może działać w sposób ciągły 
+usługa jest odbiorcą żądania, jeśli dostanie jedno żądanie, wykona jedną usługę
+
+3. Odtwórz nagranie ros2 bag play jazda po teleport_absolute do punktu startu. Czy żółw powtarza trasę? Dlaczego nie idealnie?
+powtaża trasę ale w sposób nieciągły, zależy od taktowania z jakim funkcja bag pobierała informacje o pozycji żółwia, przedtawia funkcję dyskretną
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ros2 node list                                   # jakie węzły działają?
 
 /turtlesim
