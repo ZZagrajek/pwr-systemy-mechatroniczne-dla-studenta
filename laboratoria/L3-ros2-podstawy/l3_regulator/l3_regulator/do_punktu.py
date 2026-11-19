@@ -28,12 +28,9 @@ class DoPunktu(Node):
         self.punkt = 0
 
         self.create_subscription(Pose, '/turtle1/pose', self.odbierz_pozycje, 10)
-
         self.pub = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
-
         self.pub_punkt = self.create_publisher(Int32, '/osiagniety_punkt', 10)
-
-         self.create_timer(1.0 / 20.0, self.sterowanie)
+        self.create_timer(1.0 / 20.0, self.sterowanie)
 
     def odbierz_pozycje(self, msg):
         self.x = msg.x
