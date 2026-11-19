@@ -186,3 +186,15 @@ Topic information: Topic: /turtle1/cmd_vel | Type: geometry_msgs/msg/Twist | Cou
                    Topic: /turtle1/pose | Type: turtlesim/msg/Pose | Count: 13507 | Serialization Format: cdr
 Service:           0
 Service information:
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------
+node - węzły
+topic - tematy
+czyli np. węzeł czujnik ma temat odległość 
+service - usługa - co węzeł może dla nas robić
+param - parametry węzłów
+bag - zapisywanie publikowanych wiadomości?
